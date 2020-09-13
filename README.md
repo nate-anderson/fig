@@ -41,3 +41,11 @@ These methods return an `error` if the variable is not configured or if the stri
 - MustGetFloat64
 
 These are useful for required configuration variables for which repeated error checks are a PITA.
+
+For retrieving variables with hard-coded defaults, use the `...Or` set of methods:
+
+- GetStringOr
+- GetIntOr
+- GetInt64Or
+- GetBoolOr
+- GetFloatOr
