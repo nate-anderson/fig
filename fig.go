@@ -55,16 +55,6 @@ func (c Config) GetString(key string) (string, error) {
 	return c.get(key)
 }
 
-// MustGetString retrieves the configured string or panics if undefined
-func (c Config) MustGetString(key string) string {
-	value, err := c.get(key)
-	if err != nil {
-		panic(err)
-	}
-
-	return value
-}
-
 // GetInt retrieves the configured int
 func (c Config) GetInt(key string) (int, error) {
 	val, err := c.get(key)
@@ -125,6 +115,16 @@ func (c Config) GetFloat64(key string) (float64, error) {
 	return i, nil
 }
 
+// MustGetString retrieves the configured string or panics if undefined
+func (c Config) MustGetString(key string) string {
+	value, err := c.get(key)
+	if err != nil {
+		panic(err)
+	}
+
+	return value
+}
+
 // MustGetInt retrieves the configured int or panics
 func (c Config) MustGetInt(key string) int {
 	val, err := c.get(key)
@@ -175,6 +175,76 @@ func (c Config) MustGetFloat64(key string) float64 {
 	val, err := c.get(key)
 	if err != nil {
 		panic(err)
+	}
+
+	i, err := strconv.ParseFloat(val, 64)
+	if err != nil {
+		panic(errConfigWrongType(key, val, typeFloat64))
+	}
+
+	return i
+}
+
+// GetStringOr retrieves the configured string or the provided default
+func (c Config) GetStringOr(key, defaultString string) string {
+	value, err := c.get(key)
+	if err != nil {
+		return defaultString
+	}
+
+	return value
+}
+
+// GetIntOr retrieves the configured int or the provide ddefault
+func (c Config) GetIntOr(key string, defaultInt int) int {
+	val, err := c.get(key)
+	if err != nil {
+		return defaultInt
+	}
+
+	i, err := strconv.Atoi(val)
+	if err != nil {
+		panic(errConfigWrongType(key, val, typeInt))
+	}
+
+	return i
+}
+
+// GetInt64Or retrieves the configured int64 or the provided default
+func (c Config) GetInt64Or(key string, defaultInt64 int64) int64 {
+	val, err := c.get(key)
+	if err != nil {
+		return defaultInt64
+	}
+
+	i, err := strconv.ParseInt(val, 10, 64)
+	if err != nil {
+		panic(errConfigWrongType(key, val, typeInt64))
+	}
+
+	return i
+}
+
+// GetBoolOr retrieves the configured bool or the provided default
+func (c Config) GetBoolOr(key string, defaultBool bool) bool {
+	val, err := c.get(key)
+	if err != nil {
+		return defaultBool
+	}
+
+	i, err := strconv.ParseBool(val)
+	if err != nil {
+		panic(errConfigWrongType(key, val, typeBool))
+	}
+
+	return i
+}
+
+// GetFloat64Or retrieves the configured float64 or the provided default
+func (c Config) GetFloat64Or(key string, defaultFloat64 float64) float64 {
+	val, err := c.get(key)
+	if err != nil {
+		return defaultFloat64
 	}
 
 	i, err := strconv.ParseFloat(val, 64)
