@@ -3,7 +3,7 @@
 # fig
 Juicy config from environment in Go
 
-Fig wraps John Barton's [godotenv](github.com/joho/godotenv) with caching and typed config variables. I wrote this as a subpackage
+Fig wraps John Barton's [godotenv](https://github.com/joho/godotenv) with caching and typed config variables. I wrote this as a subpackage
 for another project and extracted it to this repo for easy reuse. It's probably not production-worthy but it's a useful way to 
 manage configs.
 
@@ -41,3 +41,11 @@ These methods return an `error` if the variable is not configured or if the stri
 - MustGetFloat64
 
 These are useful for required configuration variables for which repeated error checks are a PITA.
+
+For retrieving variables with hard-coded defaults, use the `...Or` set of methods:
+
+- GetStringOr
+- GetIntOr
+- GetInt64Or
+- GetBoolOr
+- GetFloatOr
