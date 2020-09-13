@@ -1,3 +1,5 @@
+<img src="https://github.com/nate-anderson/fig/blob/master/figs.jpg" width="150" alt="Figs">
+
 # fig
 Juicy config from environment in Go
 
