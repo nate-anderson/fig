@@ -1,7 +1,7 @@
 # fig
 Juicy config from environment in Go
 
-Fig wraps John Barton's github.com/joho/godotenv with caching and typed config variables.
+Fig wraps John Barton's [godotenv](github.com/joho/godotenv) with caching and typed config variables.
 
 ## Initializing
 Calling `fig.Make()` with no parameters initializes a Config object with the contents
