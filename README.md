@@ -3,7 +3,7 @@
 # fig
 Juicy config from environment in Go
 
-Fig wraps John Barton's [godotenv](github.com/joho/godotenv) with caching and typed config variables. I wrote this as a subpackage
+Fig wraps John Barton's [godotenv](https://github.com/joho/godotenv) with caching and typed config variables. I wrote this as a subpackage
 for another project and extracted it to this repo for easy reuse. It's probably not production-worthy but it's a useful way to 
 manage configs.
 
