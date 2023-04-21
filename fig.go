@@ -1,15 +1,15 @@
 package fig
 
 import (
+	"errors"
 	"fmt"
-	"os"
 	"strconv"
-
-	"github.com/joho/godotenv"
 )
 
 // Config caches and retrieves configurations from the environment
-type Config map[string]string
+type Config struct {
+	drivers []Driver
+}
 
 const (
 	typeInt     string = "int"
@@ -19,35 +19,32 @@ const (
 )
 
 // build error for undefined config variable
-func errConfigNotFound(key string) error {
-	return fmt.Errorf("Undefined configuration variable '%s'", key)
-}
+var ErrConfigNotFound = errors.New("config variable not found")
 
 // build error for malformed variable
 func errConfigWrongType(key, value, expType string) error {
 	return fmt.Errorf("Configuration variable %s (value '%s') not of requested type %s", key, value, expType)
 }
 
-// Make initializes the config object
-func Make(filenames ...string) (Config, error) {
-	err := godotenv.Load(filenames...)
-	return Config{}, err
+// New initializes a config object
+func New(drivers ...Driver) Config {
+	return Config{
+		drivers: drivers,
+	}
 }
 
 // get string or cache
 func (c Config) get(key string) (string, error) {
-	val, ok := c[key]
-	if ok {
-		return val, nil
+	for _, driver := range c.drivers {
+		if val, err := driver.Get(key); err == nil {
+			return val, nil
+		} else if errors.Is(err, ErrConfigNotFound) {
+			continue
+		} else {
+			return "", fmt.Errorf("error ")
+		}
 	}
-
-	val = os.Getenv(key)
-	if val == "" {
-		return "", errConfigNotFound(key)
-	}
-
-	c[key] = val
-	return val, nil
+	return "", fmt.Errorf("%w: config key %s not found", ErrConfigNotFound, key)
 }
 
 // GetString retrieves the configured string
