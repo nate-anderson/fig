@@ -17,7 +17,10 @@ type Driver interface {
 type EnvironmentDriver struct{}
 
 func NewEnvironmentDriver(filenames ...string) (EnvironmentDriver, error) {
-	err := godotenv.Load(filenames...)
+	var err error
+	if len(filenames) > 0 {
+		err = godotenv.Load(filenames...)
+	}
 	return EnvironmentDriver{}, err
 }
 
