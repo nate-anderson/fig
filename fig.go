@@ -18,7 +18,7 @@ const (
 	typeFloat64 string = "float64"
 )
 
-// build error for undefined config variable
+// Sentinel error for undefined config variable
 var ErrConfigNotFound = errors.New("config variable not found")
 
 // build error for malformed variable
