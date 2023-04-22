@@ -36,3 +36,19 @@ func (d EnvironmentDriver) Get(key string) (string, error) {
 func (d EnvironmentDriver) Name() string {
 	return "env"
 }
+
+// For use when environment files may not be present in all environments
+func NewOptionalFileEnvironmentDriver(filenames ...string) (EnvironmentDriver, error) {
+	presentFiles := []string{}
+	for _, f := range filenames {
+		if _, err := os.Stat(f); err != nil {
+			presentFiles = append(presentFiles, f)
+		}
+	}
+	if len(presentFiles) > 0 {
+		if err := godotenv.Load(presentFiles...); err != nil {
+			return EnvironmentDriver{}, err
+		}
+	}
+	return EnvironmentDriver{}, nil
+}
