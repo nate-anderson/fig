@@ -1,27 +1,24 @@
 <img src="https://github.com/nate-anderson/fig/blob/master/figs.jpg" width="250" alt="Figs">
 
 # fig
-Juicy config from environment in Go
 
-Fig wraps John Barton's [godotenv](https://github.com/joho/godotenv) with caching and typed config variables. I wrote this as a subpackage
-for another project and extracted it to this repo for easy reuse. It's probably not production-worthy but it's a useful way to 
-manage configs.
+Juicy extensible config in Go
+
+Fig wraps John Barton's [godotenv](https://github.com/joho/godotenv) with convenience methods for type validation and struct unmarshaling. I wrote this as a subpackage
+for another project and extracted it to this repo for easy reuse.
 
 ## Initializing
-Calling `fig.Make()` with no parameters initializes a Config object with the contents
-of `./.env`. Pass one or more filenames to read environment variables from specific files: `fig.Make("./config.env", "./example.env")`
 
-## Retrieving config variables
-Retrieving a value from the environment will cache it in the Config object to (minimally) speed up retrieval. 
+Calling `fig.New()` with no parameters initializes a Config object that reads from the
+environment. Passing drivers to `New()` tells `fig` where to check for configuration variables
+and your preferred precedence. A driver is any type that allows `fig` to read string values
+by key.
 
-``` go
-conf := fig.Make()
+A driver for reading from `.env` files is included.
 
-// first call reads from environment
-confStr, _ := conf.GetString("ENV_NAME")
-
-// subsequent calls read from cache
-confStrCached, _ := conf.GetString("ENV_NAME")
+```go
+envDriver, err := NewEnvironmentDriver(".env", "local.env")
+conf := fig.New(envDriver)
 ```
 
 `fig.Config` has methods for retrieving `string`s, `int`s, `int64`s, `float64`s and `bool`s.
@@ -49,3 +46,27 @@ For retrieving variables with hard-coded defaults, use the `...Or` set of method
 - GetInt64Or
 - GetBoolOr
 - GetFloatOr
+
+## Struct Unmarshaling
+
+Use the `fig` and `required` struct tags to decorate your configuration structs and quickly
+read from your configuration providers. This function makes use of reflection so it is not necessarily optimal for repeated runtime unmarshals.
+
+```go
+type Config struct {
+    DBHost string  `fig:"DB_HOST" required:"true"`
+    DBPort *int    `fig:"DB_PORT"`
+    DBUser string  `fig:"DB_USER"`
+    DBPass *string `fig:"DB_PASS"`
+}
+
+var appConfig Config
+
+func init() {
+    envDriver, _ := NewEnvironmentDriver(".env", "local.env")
+    conf := fig.New(envDriver)
+    err := conf.Unmarshal(&appConfig)
+}
+```
+
+If you need more advanced struct unmarshaling for configuration, I recommend [viper](https://github.com/spf13/viper).
