@@ -90,18 +90,35 @@ func (c Config) Unmarshal(dest interface{}) error {
 // supports same primitive types supported by the Config `getFoo` methods
 // int, int64, bool, string, float64
 func (c Config) setFieldValue(field reflect.Value, fieldType reflect.Type, key, value string) error {
-	switch fieldType.Kind() {
+	ft := fieldType
+	isPtr := false
+	if fieldType.Kind() == reflect.Pointer {
+		isPtr = true
+		ft = fieldType.Elem()
+	}
+
+	var refVal reflect.Value
+
+	switch ft.Kind() {
 	case reflect.String:
-		stringVal := reflect.ValueOf(value)
-		field.Set(stringVal)
+		if isPtr {
+			refVal = reflect.ValueOf(&value)
+		} else {
+			refVal = reflect.ValueOf(value)
+		}
+		field.Set(refVal)
 		return nil
 
 	case reflect.Int:
 		if parsed, err := strconv.Atoi(value); err != nil {
 			return errConfigWrongType(key, value, typeInt)
 		} else {
-			intVal := reflect.ValueOf(parsed)
-			field.Set(intVal)
+			if isPtr {
+				refVal = reflect.ValueOf(&parsed)
+			} else {
+				refVal = reflect.ValueOf(parsed)
+			}
+			field.Set(refVal)
 			return nil
 		}
 
@@ -109,8 +126,12 @@ func (c Config) setFieldValue(field reflect.Value, fieldType reflect.Type, key, 
 		if parsed, err := strconv.ParseInt(value, 10, 64); err != nil {
 			return errConfigWrongType(key, value, typeInt64)
 		} else {
-			intVal := reflect.ValueOf(parsed)
-			field.Set(intVal)
+			if isPtr {
+				refVal = reflect.ValueOf(&parsed)
+			} else {
+				refVal = reflect.ValueOf(parsed)
+			}
+			field.Set(refVal)
 			return nil
 		}
 
@@ -118,8 +139,12 @@ func (c Config) setFieldValue(field reflect.Value, fieldType reflect.Type, key, 
 		if parsed, err := strconv.ParseBool(value); err != nil {
 			return errConfigWrongType(key, value, typeBool)
 		} else {
-			boolVal := reflect.ValueOf(parsed)
-			field.Set(boolVal)
+			if isPtr {
+				refVal = reflect.ValueOf(&parsed)
+			} else {
+				refVal = reflect.ValueOf(parsed)
+			}
+			field.Set(refVal)
 			return nil
 		}
 
@@ -127,13 +152,17 @@ func (c Config) setFieldValue(field reflect.Value, fieldType reflect.Type, key, 
 		if parsed, err := strconv.ParseFloat(value, 64); err != nil {
 			return errConfigWrongType(key, value, typeFloat64)
 		} else {
-			floatVal := reflect.ValueOf(parsed)
-			field.Set(floatVal)
+			if isPtr {
+				refVal = reflect.ValueOf(&parsed)
+			} else {
+				refVal = reflect.ValueOf(parsed)
+			}
+			field.Set(refVal)
 			return nil
 		}
 
 	default:
-		return fmt.Errorf("fig does not support config fields of type %s: supported values are string, int, int64, float64 and bool", fieldType.Kind().String())
+		return fmt.Errorf("fig does not support config fields of type %s: supported values are (*)string, (*)int, (*)int64, (*)float64 and (*)bool", fieldType.Kind().String())
 	}
 
 }
