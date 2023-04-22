@@ -13,6 +13,8 @@ Juicy extensible config in Go
 Fig wraps John Barton's [godotenv](https://github.com/joho/godotenv) with convenience methods for type validation and struct unmarshaling. I wrote this as a subpackage
 for another project and extracted it to this repo for easy reuse.
 
+`go get github.com/nate-anderson/fig/v2`
+
 ## Initializing
 
 Calling `fig.New()` with no parameters initializes a Config object that reads from the
