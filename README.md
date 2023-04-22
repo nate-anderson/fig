@@ -2,6 +2,12 @@
 
 # fig
 
+[![Build and test Go package](https://github.com/nate-anderson/fig/actions/workflows/ci.yml/badge.svg)](https://github.com/nate-anderson/fig/actions/workflows/ci.yml)
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/nate-anderson/fig/v2)](https://goreportcard.com/report/github.com/nate-anderson/fig/v2)
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/nate-anderson/fig/v2.svg)](https://pkg.go.dev/github.com/nate-anderson/fig/v2)
+
 Juicy extensible config in Go
 
 Fig wraps John Barton's [godotenv](https://github.com/joho/godotenv) with convenience methods for type validation and struct unmarshaling. I wrote this as a subpackage
