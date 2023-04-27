@@ -339,6 +339,42 @@ func TestFig(t *testing.T) {
 	})
 }
 
+func TestDriverPrecedence(t *testing.T) {
+	first := testDriver{
+		vals: map[string]string{
+			"first": "FIRST",
+		},
+	}
+	second := testDriver{
+		vals: map[string]string{
+			"first":  "SECOND",
+			"second": "SECOND",
+		},
+	}
+	conf := New(first, second)
+
+	t.Run("first driver takes precedence over second driver", func(t *testing.T) {
+		val, err := conf.GetString("first")
+		if err != nil {
+			t.Error(err)
+		}
+		if val != "FIRST" {
+			t.Error("expected first driver to take precedence")
+		}
+	})
+
+	t.Run("conf falls back on second driver when first does not know key", func(t *testing.T) {
+		val, err := conf.GetString("second")
+		if err != nil {
+			t.Error(err)
+		}
+		if val != "SECOND" {
+			t.Error("expected value from second driver")
+		}
+	})
+
+}
+
 func TestDrivers(t *testing.T) {
 	t.Run("creating with non-existant env file falls back to environment variables", func(t *testing.T) {
 		testVal := "TESTVAL"
