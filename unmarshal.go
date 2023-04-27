@@ -65,6 +65,7 @@ func (c Config) Unmarshal(dest interface{}) error {
 			}
 
 			fieldHasBeenSet = true
+			break
 		}
 
 		// if the field wasn't set, check for a default value, then make sure it wasn't a required field
