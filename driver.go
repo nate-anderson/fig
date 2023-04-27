@@ -1,6 +1,8 @@
 package fig
 
 import (
+	"errors"
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -41,8 +43,10 @@ func (d EnvironmentDriver) Name() string {
 func NewOptionalFileEnvironmentDriver(filenames ...string) (EnvironmentDriver, error) {
 	presentFiles := []string{}
 	for _, f := range filenames {
-		if _, err := os.Stat(f); err != nil {
+		if _, err := os.Stat(f); err == nil {
 			presentFiles = append(presentFiles, f)
+		} else if !errors.Is(err, os.ErrNotExist) {
+			return EnvironmentDriver{}, fmt.Errorf("failed checking for file %s: %w", f, err)
 		}
 	}
 	if len(presentFiles) > 0 {

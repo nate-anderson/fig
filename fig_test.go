@@ -2,6 +2,7 @@ package fig
 
 import (
 	"errors"
+	"os"
 	"testing"
 )
 
@@ -335,5 +336,27 @@ func TestFig(t *testing.T) {
 				val = config.MustGetBool("Z")
 			})
 		})
+	})
+}
+
+func TestDrivers(t *testing.T) {
+	t.Run("creating with non-existant env file falls back to environment variables", func(t *testing.T) {
+		testVal := "TESTVAL"
+		testKey := "TEST"
+		os.Setenv(testKey, testVal)
+		driverNoFile, err := NewOptionalFileEnvironmentDriver(".env")
+		if err != nil {
+			t.Error(err)
+		}
+
+		conf := New(driverNoFile)
+		str, err := conf.GetString(testKey)
+		if err != nil {
+			t.Error(err)
+		}
+
+		if str != testVal {
+			t.Errorf("expected %s: got %s", testVal, str)
+		}
 	})
 }
