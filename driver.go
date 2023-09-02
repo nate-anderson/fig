@@ -16,19 +16,28 @@ type Driver interface {
 }
 
 // EnvironmentDriver supports reading from the environment and .env files
-type EnvironmentDriver struct{}
+type EnvironmentDriver struct {
+	env map[string]string
+}
 
 func NewEnvironmentDriver(filenames ...string) (EnvironmentDriver, error) {
 	var err error
+	var env = map[string]string{}
 	if len(filenames) > 0 {
-		err = godotenv.Load(filenames...)
+		env, err = godotenv.Read(filenames...)
 	}
-	return EnvironmentDriver{}, err
+	return EnvironmentDriver{env: env}, err
 }
 
+// Get returns values from the environment, preferring real environment variables
+// above those from .env files
 func (d EnvironmentDriver) Get(key string) (string, error) {
-	val := os.Getenv(key)
-	if val == "" {
+	if envVal := os.Getenv(key); envVal != "" {
+		return envVal, nil
+	}
+
+	val, ok := d.env[key]
+	if !ok {
 		return "", ErrConfigNotFound
 	}
 

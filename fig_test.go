@@ -395,4 +395,26 @@ func TestDrivers(t *testing.T) {
 			t.Errorf("expected %s: got %s", testVal, str)
 		}
 	})
+
+	t.Run("real environment variables take precedence over those from files", func(t *testing.T) {
+		var (
+			exp = "goodbye"
+			key = "TEST_VAL"
+		)
+		os.Setenv(key, exp)
+
+		driver, err := NewOptionalFileEnvironmentDriver("test.env")
+		if err != nil {
+			t.Error(err)
+		}
+
+		act, err := driver.Get(key)
+		if err != nil {
+			t.Error(err)
+		}
+
+		if act != exp {
+			t.Error("env does not take precedence over env files")
+		}
+	})
 }
