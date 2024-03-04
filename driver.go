@@ -25,8 +25,11 @@ func NewEnvironmentDriver(filenames ...string) (EnvironmentDriver, error) {
 	var env = map[string]string{}
 	if len(filenames) > 0 {
 		env, err = godotenv.Read(filenames...)
+		if err != nil {
+			return EnvironmentDriver{}, err
+		}
 	}
-	return EnvironmentDriver{env: env}, err
+	return EnvironmentDriver{env: env}, nil
 }
 
 // Get returns values from the environment, preferring real environment variables
