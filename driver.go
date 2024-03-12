@@ -1,7 +1,6 @@
 package fig
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
@@ -57,7 +56,7 @@ func NewOptionalFileEnvironmentDriver(filenames ...string) (EnvironmentDriver, e
 	for _, f := range filenames {
 		if _, err := os.Stat(f); err == nil {
 			presentFiles = append(presentFiles, f)
-		} else if !errors.Is(err, os.ErrNotExist) {
+		} else if !os.IsNotExist(err) {
 			return EnvironmentDriver{}, fmt.Errorf("failed checking for file %s: %w", f, err)
 		}
 	}
